@@ -1,0 +1,54 @@
+*{
+            
+    font-family: 'Open Sans', sans-serif;
+}
+#fiveDayForecast{
+    display:flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+    font-size:10px;
+    
+    
+}
+
+#cityButtons{
+    width:100px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+button{
+    height:50px;
+    width:200px;
+}
+input{
+    height:50px;
+    width:300px;
+}
+#main{
+    display: flex;
+    
+} 
+.left{
+    flex:35%;
+}
+.right{
+    flex:65%;
+}
+#weatherPart{
+    display: flex;
+    flex-direction: column;
+    
+}
+#firsthour{
+    font-size: 15px;
+    margin: 5px;    
+}
+#weathercity{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 30px;
+    margin-bottom: 15px;    
+}

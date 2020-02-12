@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">    
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+     <link rel="stylesheet" href="style.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1 style="text-align: center; font-size:30px; background-color:black; color:white;">Weather Forecast</h1>
+    <input  type="text" id="searchInput" >
+    <button type="button" id="searchButton">Search</button>
+    <div class="row" id="main">
+        <div class="col-md-4 left">
+            <div  id="cityButtons">
+            </div>
+        </div>
+        <div class="col-md-8 right">
+            <div class="row" id="weatherPart">
+                <div class="col-6" id="cityWeather">   
+                    <div id='uvIndex'></div>
+                </div>
+                <div class="col-6" id="fiveDayForecast">    
+                    <div id="firstday"></div>
+                    <div id="secondday"></div>
+                    <div id="thirdday"></div>
+                    <div id="fourthday"></div>
+                    <div id="fifthday"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    var uvIndex ;
+    var lonoc;
+    var latoc;
+    var date = moment().format('L');
+    var cityArr = [];
+    var cityArrLs = [];
+    var cityArrLsNew = [];
+    sButton = document.getElementById('searchButton');
+    var citybuttons = document.getElementById('cityButtons');
+     if(window.localStorage.length !== 0 )
+     {
+        window.onload = displayArr(); 
+    } 
+    sButton.addEventListener('click', function () 
+    {
+        var sinput = document.getElementById('searchInput');
+        var si = sinput.value;
+        cityArrLs.push(si);
+        localStorage.setItem('cityArrLs',JSON.stringify(cityArrLs));
+        citybuttons.innerHTML = '';        
+        cityArrLs = JSON.parse(localStorage.getItem('cityArrLs'));
+        for(i=0;i<cityArrLs.length;i++){
+        citybuttons.innerHTML += `<button type='button' id='${cityArrLs[i]}'>${cityArrLs[i]}</button>`;
+
+        }
+        console.log(`${cityArrLs}`);
+        
+    
+        });
+     function displayArr(){
+        cityArrLs = JSON.parse(localStorage.getItem('cityArrLs'));
+        console.log(`${cityArrLs}`);
+         for(i=0;i<cityArrLs.length;i++){
+        citybuttons.innerHTML += `<button type='button' id='${cityArrLs[i]}'>${cityArrLs[i]}</button>`;
+
+        }
+       
+     }   
+    document.getElementById('cityButtons').addEventListener('click',function(event){
+        const buttonPressed = event.target.id;
+        console.log(`${buttonPressed}`);
+        var APIKey = "4336e1913d44bd04e113009be683a0fc";
+        // Here we are building the URL we need to query the database
+        var queryURL = `https://api.openweathermap.org/data/2.5/weather?q=${buttonPressed}&appid=` + APIKey;;
+        // We then created an AJAX call 
+        $.ajax({
+        url: queryURL,
+        method: "GET"
+        }).then(function(response){
+           
+            var queryURL2 = `http://api.openweathermap.org/data/2.5/uvi?appid=4336e1913d44bd04e113009be683a0fc&lat=${response.coord.lat}&lon=${response.coord.lon}` ;
+            $.ajax({
+            url: queryURL2,
+            method: "GET"
+            }).then(function(response2){
+                var uvDisplay = document.getElementById('uvIndex');
+                
+                uvIndexdisplay = response2.value;
+                
+            }) ;
+            console.log(`${uvIndexdisplay}`);
+             
+            console.log(response);
+            var cwDisplay = document.getElementById('cityWeather');
+            cwDisplay.innerHTML = `<h3>${buttonPressed} (${date})</h3>
+            <h3>Temp: ${response.main.temp}</h3><h3>Humidity :${response.main.humidity}</h3>
+            <h3>Wind : ${response.wind.speed}<h3 style="background-color:red;">uv-index: ${uvIndexdisplay}</h3>`;
+        
+        });
+        
+         var queryURL3= `http://api.openweathermap.org/data/2.5/forecast?q=${buttonPressed}&appid=4336e1913d44bd04e113009be683a0fc` ;
+            $.ajax({
+            url: queryURL3,
+            method: "GET"
+            }).then(function(response3){
+                console.log(response3);
+                var fdwf = document.getElementById('fiveDayForecast');
+                
+                firstday.innerHTML = `<h3>${response3.list[0].dt_txt.slice(0,10)}</h3> <img src='http://openweathermap.org/img/w/${response3.list[0].weather[0].icon}.png'>
+                 <h3>Temp :${response3.list[0].main.temp}</h3><br><h3>Humidity :${response3.list[0].main.humidity}</h3>`;
+                secondday.innerHTML = `<h3>${response3.list[7].dt_txt.slice(0,10)}</h3><img src='http://openweathermap.org/img/w/${response3.list[7].weather[0].icon}.png'>
+                <h3>Temp :${response3.list[7].main.temp}</h3><br><h3>Humidity :${response3.list[7].main.humidity}</h3>`;
+                thirdday.innerHTML = `<h3>${response3.list[14].dt_txt.slice(0,10)}</h3><img src='http://openweathermap.org/img/w/${response3.list[14].weather[0].icon}.png'>
+                <h3>Temp :${response3.list[14].main.temp}</h3><br><h3>Humidity :${response3.list[14].main.humidity}</h3>`;
+                fourthday.innerHTML = `<h3>${response3.list[21].dt_txt.slice(0,10)}</h3><img src='http://openweathermap.org/img/w/${response3.list[21].weather[0].icon}.png'>
+                <h3>Temp :${response3.list[21].main.temp}</h3><br><h3>Humidity :${response3.list[21].main.humidity}</h3>`;
+                fifthday.innerHTML = `<h3>${response3.list[29].dt_txt.slice(0,10)}</h3><img src='http://openweathermap.org/img/w/${response3.list[29].weather[0].icon}.png'>
+                <h3>Temp :${response3.list[29].main.temp}</h3><br><h3>Humidity :${response3.list[29].main.humidity}</h3>`;
+            
+            });
+    });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+   
+
+
+
+   </body>
+    
+</html>
