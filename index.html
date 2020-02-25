@@ -25,7 +25,7 @@
         <div class="col-md-8 right">
             <div class="row" id="weatherPart">
                 <div class="col-6" id="cityWeather">   
-                    <div id='uvIndex'></div>
+               
                 </div>
                 <div class="col-6" id="fiveDayForecast">    
                     <div id="firstday"></div>
@@ -45,7 +45,9 @@
     var cityArr = [];
     var cityArrLs = [];
     var cityArrLsNew = [];
+    var uvIndexdisplay;
     sButton = document.getElementById('searchButton');
+    var uvDisplay = document.getElementById('uvIndex');
     var citybuttons = document.getElementById('cityButtons');
      if(window.localStorage.length !== 0 )
      {
@@ -87,26 +89,23 @@
         url: queryURL,
         method: "GET"
         }).then(function(response){
-           
             var queryURL2 = `https://api.openweathermap.org/data/2.5/uvi?appid=4336e1913d44bd04e113009be683a0fc&lat=${response.coord.lat}&lon=${response.coord.lon}` ;
             $.ajax({
             url: queryURL2,
             method: "GET"
             }).then(function(response2){
-                var uvDisplay = document.getElementById('uvIndex');
-                
-                uvIndexdisplay = response2.value;
-                
-            }) ;
-            console.log(`${uvIndexdisplay}`);
-             
-            console.log(response);
+               console.log(`${response2.value}`);
+               
+               uvIndexdisplay = response2.value;
+               console.log(response);
             var cwDisplay = document.getElementById('cityWeather');
             cwDisplay.innerHTML = `<h3>${buttonPressed} (${date})</h3>
             <h3>Temp: ${response.main.temp}</h3><h3>Humidity :${response.main.humidity}</h3>
-            <h3>Wind : ${response.wind.speed}<h3 style="background-color:red;">uv-index: ${uvIndexdisplay}</h3>`;
-        
+            <h3>Wind : ${response.wind.speed}</h3><h3 style="background-color:red;">uvIndex:${uvIndexdisplay}</h3>`;
+                
+            }) ;
         });
+        
         
          var queryURL3= `https://api.openweathermap.org/data/2.5/forecast?q=${buttonPressed}&appid=4336e1913d44bd04e113009be683a0fc` ;
             $.ajax({
